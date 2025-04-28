@@ -1,0 +1,31 @@
+---
+export const prerender = false;
+export const serverOnly = true;
+import { actions } from "astro:actions";
+import AppLayout from "../../../layouts/Layout.astro";
+import TaskForm from "../../../components/TaskForm.astro";
+import { getOneTaskById } from "../../../app/controllers/task/getOneById.controller";
+
+const { id } = Astro.params;
+const numericId = id ? parseInt(id, 10) : NaN;
+
+if (isNaN(numericId)) {
+  Astro.redirect("/404");
+}
+
+const task = await getOneTaskById({ id: numericId });
+
+if (!task) {
+  Astro.redirect("/404");
+}
+
+const result = Astro.getActionResult(actions.task.updateAction);
+
+if (result && !result.error) {
+  return Astro.redirect(`/task/${result.data.task?.id}`);
+}
+---
+
+<AppLayout title="Edit Task">
+  <TaskForm task={task} />
+</AppLayout>

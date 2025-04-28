@@ -1,0 +1,76 @@
+---
+export const prerender = false;
+export const serverOnly = true;
+import { actions } from "astro:actions";
+import AppLayout from "../../layouts/Layout.astro";
+import { getOneTaskById } from "../../app/controllers/task/getOneById.controller";
+
+const { id } = Astro.params;
+const numericId = id ? parseInt(id, 10) : NaN;
+
+if (isNaN(numericId)) {
+  Astro.redirect("/404");
+}
+
+const task = await getOneTaskById({ id: numericId });
+
+if (!task) {
+  Astro.redirect("/404");
+}
+
+const result = Astro.getActionResult(actions.task.deleteAction);
+
+if (result && !result.error) {
+  return Astro.redirect(`/`);
+}
+---
+<AppLayout title="Task Details">
+  <article class="bg-white p-6 rounded-lg shadow-sm space-y-6">
+    <header class="flex items-start justify-between pb-4">
+      <div>
+        <h2
+          class={`text-2xl font-semibold ${task?.completed ? "line-through text-gray-400" : ""}`}
+        >
+          {task?.title}
+        </h2>
+        <p class="text-sm text-gray-500 mt-1">
+          Priority: <span class="font-medium">{task?.priority}</span>
+        </p>
+      </div>
+      <form method="POST" action={actions.task.updateAction} id="taskForm"> 
+        <input type="text" name="id" value={task?.id} hidden />
+        <input
+          name="completed"
+          type="checkbox"
+          checked={task?.completed}
+          class="w-5 h-5 mt-1"
+          onchange="document.getElementById('taskForm').submit()"
+        />
+      </form>
+    </header>
+
+    <section class="text-base text-gray-700">
+      <p>{task?.description || "No description provided."}</p>
+    </section>
+
+    <footer class="flex justify-end gap-4 pt-4">
+      <form method="GET" action={`/task/${task?.id}/edit`}>
+        <button
+          class="text-blue-600 hover:underline text-sm font-medium"
+          type="submit"
+        >
+          Edit
+        </button>
+      </form>
+      <form method="POST" action={actions.task.deleteAction}>
+        <input type="text" name="id" value={task?.id} hidden />
+        <button
+          class="text-red-600 hover:underline text-sm font-medium"
+          type="submit"
+        >
+          Delete
+        </button>
+      </form>
+    </footer>
+  </article>
+</AppLayout>

@@ -1,0 +1,27 @@
+---
+export const prerender = false;
+import { getTasks } from "../../app/controllers/task/getMany.controller";
+import AppLayout from "../../layouts/Layout.astro";
+import TaskBoard from "../../components/TaskBoard.svelte";
+import type { TaskPriority } from "../../app/core/entities/Task";
+
+const { searchParams } = Astro.url;
+const priority = (searchParams.get("priority") as TaskPriority) || undefined;
+const completed = searchParams.get("completed") === "on" ? true : undefined;
+
+const filters = {
+  priority,
+  completed,
+};
+
+const tasks = await getTasks({ priority, completed });
+---
+
+<AppLayout title="Tasks">
+  <div class="flex justify-between flex-wrap items-baseline">
+    <h1 class="text-2xl mb-4">📋 Task List</h1>
+    <a href="/task/new">Create new task</a>
+  </div>
+
+  <TaskBoard client:load initialTasks={tasks} {filters} />
+</AppLayout>

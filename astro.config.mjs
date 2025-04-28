@@ -1,5 +1,24 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
+import svelte from '@astrojs/svelte';
 
-// https://astro.build/config
-export default defineConfig({});
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  vite: {
+    plugins: [tailwindcss()],
+    server: {
+      watch: {
+        ignored: [
+          '**/prisma/dev.db',
+        ],
+      },
+    },
+  },
+  integrations: [svelte({ extensions: ['.svelte'] })],
+  redirects: {
+    "/": "/task/list",
+  },
+  prefetch: {
+    prefetchAll: true
+  }
+});
