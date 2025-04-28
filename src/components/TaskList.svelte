@@ -30,8 +30,6 @@
     const task = tasks.find((task) => task.id === id);
     const updatedTask = await updateTaskStatus(id, !task?.completed);
 
-    console.log('todo', updatedTask);
-
     if (!updatedTask) {
       console.error("Failed to update task status");
       return;
