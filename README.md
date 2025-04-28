@@ -36,7 +36,7 @@ A simple task manager web app built with **Astro**, **Svelte**, **Prisma**, and 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/task-manager.git
+git clone https://github.com/chevylevel/task-manager.git
 cd task-manager
 
 # Install dependencies
