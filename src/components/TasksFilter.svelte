@@ -20,7 +20,7 @@
         id="priority"
         name="priority"
       >
-        <option>-- Select Priority --</option>
+        <option value=''>-- Select Priority --</option>
         <option value="low" selected={priority === "low"}>Low</option>
         <option value="medium" selected={priority === "medium"}>Medium</option>
         <option value="high" selected={priority === "high"}>High</option>

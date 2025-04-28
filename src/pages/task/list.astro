@@ -6,7 +6,12 @@ import TaskBoard from "../../components/TaskBoard.svelte";
 import type { TaskPriority } from "../../app/core/entities/Task";
 
 const { searchParams } = Astro.url;
-const priority = (searchParams.get("priority") as TaskPriority) || undefined;
+const select = searchParams.get("priority");
+const priority =
+  select && ["low", "medium", "high"].includes(select)
+    ? (select as TaskPriority)
+    : undefined;
+
 const completed = searchParams.get("completed") === "on" ? true : undefined;
 
 const filters = {
@@ -14,7 +19,7 @@ const filters = {
   completed,
 };
 
-const tasks = await getTasks({ priority, completed });
+const { tasks, count } = await getTasks({ priority, completed });
 ---
 
 <AppLayout title="Tasks">
@@ -23,5 +28,5 @@ const tasks = await getTasks({ priority, completed });
     <a href="/task/new">Create new task</a>
   </div>
 
-  <TaskBoard client:load initialTasks={tasks} {filters} />
+  <TaskBoard client:load tasks={tasks} tasksCount={count} {filters} />
 </AppLayout>

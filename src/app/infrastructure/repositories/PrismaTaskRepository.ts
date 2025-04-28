@@ -10,13 +10,13 @@ import type { TaskFilterParams } from "../../core/use-cases/FilterTasks";
 let instance: PrismaTaskRepository | null = null;
 
 export class PrismaTaskRepository implements TaskRepository {
-  private constructor(private prisma: PrismaClient) {}
+  private constructor(private prisma: PrismaClient) { }
 
   static getInstance(prisma: PrismaClient): PrismaTaskRepository {
     if (!instance) {
       instance = new PrismaTaskRepository(prisma);
     }
-    
+
     return instance;
   }
 
@@ -29,10 +29,13 @@ export class PrismaTaskRepository implements TaskRepository {
     return toDomainTask(task);
   }
 
-  async getAll(): Promise<Task[]> {
+  async getAll(): Promise<{ tasks: Task[], count: number }> {
     const tasks = await this.prisma.task.findMany();
 
-    return tasks.map((task: Task) => toDomainTask(task));
+    return {
+      tasks: tasks.map((task) => toDomainTask(task)),
+      count: tasks.length,
+    };
   }
 
   async getById(id: number): Promise<Task | null> {
@@ -60,11 +63,15 @@ export class PrismaTaskRepository implements TaskRepository {
     return toDomainTask(task);
   }
 
-  async filter(filter: TaskFilterParams):  Promise<Task[]> {
+  async filter(filter: TaskFilterParams): Promise<{ tasks: Task[], count: number }> {
+    const count = await this.prisma.task.count();
     const tasks = await this.prisma.task.findMany({
       where: { ...filter },
     });
 
-    return tasks ? tasks.map((task: Task) => toDomainTask(task)) : [];
+    return {
+      tasks: tasks.map((task) => toDomainTask(task)),
+      count,
+    }
   }
 }

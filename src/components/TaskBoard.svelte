@@ -10,29 +10,32 @@
   }
 
   interface TaskBoardProps {
-    initialTasks: Task[];
+    tasks: Task[];
+    tasksCount: number;
     filters: Filters;
   }
 
-  let { initialTasks = [], filters }: TaskBoardProps = $props();
+  let { tasks = [], tasksCount, filters }: TaskBoardProps = $props();
 
   setContext<Filters>("filters", {
     ...filters,
   });
-
-  let tasks = [...initialTasks];
 </script>
 
 <section class=" mx-auto">
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-    <TasksFilter />
-
-    {#if initialTasks.length === 0}
-      <div class="text-center py-10">
-        <p>No tasks yet.</p>
-      </div>
-    {:else}
-      <TaskList tasks={tasks} />
-    {/if}
-  </div>
+  {#if tasksCount === 0}
+    <div class="text-center py-10">
+      <p>No tasks yet</p>
+    </div>
+  {:else}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <TasksFilter />
+      {#if tasks.length === 0}
+        <div class="text-center py-10">
+          <p>No tasks found</p>
+        </div>
+      {/if}
+      <TaskList {tasks} />
+    </div>
+  {/if}
 </section>
